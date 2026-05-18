@@ -37,6 +37,31 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 def read_users(db: Session = Depends(get_db)):
     return crud.get_users(db)
 
+@app.put("/users/{user_id}")
+def update_user(
+    user_id: int,
+    user: schemas.UserUpdate,
+    db: Session = Depends(get_db)
+):
+    updated_user = crud.update_user(
+        db,
+        user_id,
+        user
+    )
+    if not updated_user:
+        raise HTTPException(
+            status_code=404,
+            detail="Usuario no encontrado"
+        )
+    return {
+        "message": "Usuario actualizado",
+        "user": {
+            "id": updated_user.id_user,
+            "username": updated_user.username,
+            "email": updated_user.email
+        }
+    }
+
 @app.post("/login/")
 def login(user: schemas.UserLogin, db: Session = Depends(get_db)):
     db_user = crud.login_user(db, user.email, user.password)

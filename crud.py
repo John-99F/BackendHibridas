@@ -12,6 +12,20 @@ def create_user(db: Session, user: schemas.UserCreate):
 def get_users(db: Session):
     return db.query(models.User).all()
 
+def update_user(db: Session, user_id: int, user_data):
+    db_user = (
+        db.query(models.User)
+        .filter(models.User.id_user == user_id)
+        .first()
+    )
+    if not db_user:
+        return None
+    db_user.username = user_data.username
+    db_user.email = user_data.email
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
 # CATEGORY
 def create_category(db: Session, category: schemas.CategoryCreate):
     db_category = models.Category(**category.dict())

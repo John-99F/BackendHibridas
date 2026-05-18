@@ -27,3 +27,7 @@ class CommentCreate(BaseModel):
 class UserLogin(BaseModel):
     email: str
     password: str
+
+class UserUpdate(BaseModel):
+    username: str
+    email: str
