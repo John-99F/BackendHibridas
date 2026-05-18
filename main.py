@@ -124,6 +124,31 @@ def get_posts_by_user(user_id: int, db: Session = Depends(get_db)):
 
     return result
 
+@app.put("/posts/like/{post_id}")
+def like_post(post_id: int, db: Session = Depends(get_db)):
+
+    post = (
+        db.query(models.Post)
+        .filter(models.Post.id_post == post_id)
+        .first()
+    )
+
+    if not post:
+        raise HTTPException(
+            status_code=404,
+            detail="Post no encontrado"
+        )
+
+    post.likes_count += 1
+
+    db.commit()
+    db.refresh(post)
+
+    return {
+        "message": "Like agregado",
+        "likes": post.likes_count
+    }
+
 # COMMENTS
 @app.post("/comments/")
 def create_comment(comment: schemas.CommentCreate, db: Session = Depends(get_db)):
@@ -132,3 +157,31 @@ def create_comment(comment: schemas.CommentCreate, db: Session = Depends(get_db)
 @app.get("/comments/")
 def read_comments(db: Session = Depends(get_db)):
     return crud.get_comments(db)
+
+@app.get("/comments/post/{post_id}")
+def get_comments_by_post(
+    post_id: int,
+    db: Session = Depends(get_db)
+):
+
+    comments = (
+        db.query(models.Comment)
+        .filter(models.Comment.id_post == post_id)
+        .all()
+    )
+
+    result = []
+
+    for comment in comments:
+
+        result.append({
+            "id": comment.id_comment,
+            "content": comment.content,
+            "username": (
+                comment.user.username
+                if comment.user
+                else "Anon"
+            )
+        })
+
+    return result
