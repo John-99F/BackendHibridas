@@ -47,3 +47,4 @@ class Comments(Base):
     id_user = Column(Integer, ForeignKey("users.id_user"))
 
     post = relationship("Post", back_populates="comments")
+    user = relationship("User")

@@ -165,8 +165,10 @@ def get_comments_by_post(
 ):
 
     comments = (
-        db.query(models.Comment)
-        .filter(models.Comment.id_post == post_id)
+        db.query(models.Comments)
+        .filter(
+            models.Comments.id_post == post_id
+        )
         .all()
     )
 
@@ -175,8 +177,8 @@ def get_comments_by_post(
     for comment in comments:
 
         result.append({
-            "id": comment.id_comment,
-            "content": comment.content,
+            "id": comment.id_comments,
+            "content": comment.comment,
             "username": (
                 comment.user.username
                 if comment.user
